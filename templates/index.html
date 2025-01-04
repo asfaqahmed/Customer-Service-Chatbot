@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Service Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        #chatbox {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        #messages {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+            background-color: #fff;
+        }
+        .message {
+            margin: 5px 0;
+        }
+        .user {
+            text-align: right;
+            color: blue;
+        }
+        .bot {
+            text-align: left;
+            color: green;
+        }
+        #input-section {
+            display: flex;
+            margin-top: 10px;
+        }
+        #user-message {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #send-button {
+            margin-left: 5px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #send-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div id="chatbox">
+        <h2>Chatbot</h2>
+        <div id="messages"></div>
+        <div id="input-section">
+            <input type="text" id="user-message" placeholder="Type your message here..." />
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+    <script>
+        const sendButton = document.getElementById('send-button');
+        const userMessageInput = document.getElementById('user-message');
+        const messagesDiv = document.getElementById('messages');
+
+        sendButton.addEventListener('click', async () => {
+            const userMessage = userMessageInput.value.trim();
+            if (!userMessage) return;
+
+            // Display user message
+            const userDiv = document.createElement('div');
+            userDiv.classList.add('message', 'user');
+            userDiv.textContent = `You: ${userMessage}`;
+            messagesDiv.appendChild(userDiv);
+
+            // Send user message to the API
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer YOUR_TOKEN'
+                },
+                body: JSON.stringify({ message: userMessage })
+            });
+            const data = await response.json();
+
+            // Display bot response
+            const botDiv = document.createElement('div');
+            botDiv.classList.add('message', 'bot');
+            botDiv.textContent = `Bot: ${data.response}`;
+            messagesDiv.appendChild(botDiv);
+
+            // Clear the input
+            userMessageInput.value = '';
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        });
+    </script>
+</body>
+</html>
